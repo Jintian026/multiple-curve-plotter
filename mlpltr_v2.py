@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.ticker import FormatStrFormatter
 
-def multiple_curves_plot(title, datas, labels, xticks, yticks, xlabel, ylabel):
+def multiple_curves_plot(title, datas, xticks, yticks, xlabel, ylabel, labels = None):
     x = []
     y = []
     line_styles = ['-', '--', '-.', (0, (8, 5, 1, 5, 1, 5)), ':']
@@ -14,15 +14,25 @@ def multiple_curves_plot(title, datas, labels, xticks, yticks, xlabel, ylabel):
         x.append(data[0])
         y.append(data[1])
     plt.figure(figsize=(5, 3), dpi=300)
-    for i in range(len(datas)):
-        plt.plot(
-            x[i], y[i],
-            linestyle=line_styles[i],
-            color=colors[i],
-            marker=markers[i],
-            label=labels[i],
-            markersize=5
-        )
+    if labels is None:
+        for i in range(len(datas)):
+            plt.plot(
+                x[i], y[i],
+                linestyle=line_styles[i],
+                color=colors[i],
+                marker=markers[i],
+                markersize=5
+            )
+    else:
+        for i in range(len(datas)):
+            plt.plot(
+                x[i], y[i],
+                linestyle=line_styles[i],
+                color=colors[i],
+                marker=markers[i],
+                label=labels[i],
+                markersize=5
+            )
     if xticks is not None:
         xtick_vals = np.arange(xticks['min'], xticks['max'] + xticks['interval'], xticks['interval'])
         xtick_labels = [f"{val}{xticks.get('suffix','')}" for val in xtick_vals]
@@ -45,7 +55,8 @@ def multiple_curves_plot(title, datas, labels, xticks, yticks, xlabel, ylabel):
     plt.xlabel(xlabel, fontsize=9, fontweight="bold")
     plt.ylabel(ylabel, fontsize=9, fontweight="bold")
     plt.grid(True)
-    plt.legend(fontsize=9)
+    if labels:
+        plt.legend(fontsize=9)
     plt.tight_layout()
     plt.show()
 
@@ -130,7 +141,7 @@ if __name__ == "__main__":
     multiple_curves_plot(
         title='Single Y-axis Example',
         datas=[data1, data2],
-        labels=['Data 1', 'Data 2'],
+        # labels=['Data 1', 'Data 2'],
         xticks={'min':0, 'max':6, 'interval':1, 'suffix':'', 'style':'linear', 'round':"%.2f"},
         yticks={'min':2, 'max':9, 'interval':1, 'suffix':'', 'style':'linear', 'round':"%.2f"},
         xlabel='X Label',
