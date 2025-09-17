@@ -1,163 +1,79 @@
-import matplotlib.pyplot as plt
-import numpy as np
-from matplotlib.ticker import FormatStrFormatter
-
-def multiple_curves_plot(title, datas, xticks, yticks, xlabel, ylabel, labels = None):
-    x = []
-    y = []
-    line_styles = ['-', '--', '-.', (0, (8, 5, 1, 5, 1, 5)), ':']
-    colors = ['red', 'blue', 'green', 'purple', 'orange']
-    markers = ['^', 's', 'x', 'o', 'D']
-    if len(datas) > 5:
-        raise ValueError("Supports up to 5 datasets only.")
-    for data in datas:
-        x.append(data[0])
-        y.append(data[1])
-    plt.figure(figsize=(5, 3), dpi=300)
-    if labels is None:
-        for i in range(len(datas)):
-            plt.plot(
-                x[i], y[i],
-                linestyle=line_styles[i],
-                color=colors[i],
-                marker=markers[i],
-                markersize=5
-            )
-    else:
-        for i in range(len(datas)):
-            plt.plot(
-                x[i], y[i],
-                linestyle=line_styles[i],
-                color=colors[i],
-                marker=markers[i],
-                label=labels[i],
-                markersize=5
-            )
-    if xticks is not None:
-        xtick_vals = np.arange(xticks['min'], xticks['max'] + xticks['interval'], xticks['interval'])
-        xtick_labels = [f"{val}{xticks.get('suffix','')}" for val in xtick_vals]
-        plt.xticks(xtick_vals, xtick_labels, fontsize=9)
-        plt.xlim(xticks['min'], xticks['max'])
-    if yticks is not None:
-        ytick_vals = np.arange(yticks['min'], yticks['max'] + yticks['interval'], yticks['interval'])
-        ytick_labels = [f"{val}{yticks.get('suffix','')}" for val in ytick_vals]
-        plt.yticks(ytick_vals, ytick_labels, fontsize=9)
-        plt.ylim(yticks['min'], yticks['max'])
-    if xticks is not None and xticks.get('style', 'linear') == 'log':
-        plt.xscale('log')
-    if yticks is not None and yticks.get('style', 'linear') == 'log':
-        plt.yscale('log')
-    if 'round' in xticks:
-        plt.gca().xaxis.set_major_formatter(FormatStrFormatter(xticks['round']))
-    if 'round' in yticks:
-        plt.gca().yaxis.set_major_formatter(FormatStrFormatter(yticks['round']))
-    plt.title(title, fontsize=9, fontweight="bold")
-    plt.xlabel(xlabel, fontsize=9, fontweight="bold")
-    plt.ylabel(ylabel, fontsize=9, fontweight="bold")
-    plt.grid(True)
-    if labels:
-        plt.legend(fontsize=9)
-    plt.tight_layout()
-    plt.show()
+import os
+import numpy as np 
 
 
-def multiple_curves_plot_2y(title, datas_y1, datas_y2, labels, xticks, yticks1, yticks2, xlabel, ylabel1, ylabel2):
-    line_styles = ['-', '--', '-.', (0, (8, 5, 1, 5, 1, 5)), ':']
-    colors = ['red', 'blue', 'green', 'purple', 'orange']
-    markers = ['^', 's', 'x', 'o', 'D']
-    fig, ax1 = plt.subplots(figsize=(5, 3), dpi=300)
-    for i, data in enumerate(datas_y1):
-        ax1.plot(
-            data[0], data[1],
-            linestyle=line_styles[i % len(line_styles)],
-            color=colors[i % len(colors)],
-            marker=markers[i % len(markers)],
-            label=labels[i],
-            markersize=5,
-            zorder=3
-        )
-    if xticks is not None:
-        xtick_vals = np.arange(xticks['min'], xticks['max'] + xticks['interval'], xticks['interval'])
-        xtick_labels = [f"{val}{xticks.get('suffix','')}" for val in xtick_vals]
-        ax1.set_xticks(xtick_vals)
-        ax1.set_xticklabels(xtick_labels, fontsize=9)
-        ax1.set_xlim(xticks['min'], xticks['max'])
-        if xticks.get('style','linear') == 'log':
-            ax1.set_xscale('log')
-    ax1.set_xlabel(xlabel, fontsize=9, fontweight="bold")
-    ax1.set_ylabel(ylabel1, fontsize=9, fontweight="bold")
-    if yticks1 is not None:
-        ytick_vals = np.arange(yticks1['min'], yticks1['max'] + yticks1['interval'], yticks1['interval'])
-        ytick_labels = [f"{val}{yticks1.get('suffix','')}" for val in ytick_vals]
-        ax1.set_yticks(ytick_vals)
-        ax1.set_yticklabels(ytick_labels, fontsize=9)
-        ax1.set_ylim(yticks1['min'], yticks1['max'])
-        if yticks1.get('style','linear') == 'log':
-            ax1.set_yscale('log')
-    ax1.set_axisbelow(True)
-    ax1.grid(True, which='major', axis='x', linestyle='-', alpha=0.6)
-    ax1.grid(True, which='major', axis='y', linestyle='-', alpha=0.3)
-    ax2 = ax1.twinx()
-    for j, data in enumerate(datas_y2):
-        ax2.plot(
-            data[0], data[1],
-            linestyle=line_styles[(j + len(datas_y1)) % len(line_styles)],
-            color=colors[(j + len(datas_y1)) % len(colors)],
-            marker=markers[j % len(markers)],
-            label=labels[len(datas_y1) + j],
-            markersize=5,
-            zorder=4
-        )
-    ax2.set_ylabel(ylabel2, fontsize=9, fontweight="bold")
-    if yticks2 is not None:
-        ytick_vals = np.arange(yticks2['min'], yticks2['max'] + yticks2['interval'], yticks2['interval'])
-        ytick_labels = [f"{val}{yticks2.get('suffix','')}" for val in ytick_vals]
-        ax2.set_yticks(ytick_vals)
-        ax2.set_yticklabels(ytick_labels, fontsize=9)
-        ax2.set_ylim(yticks2['min'], yticks2['max'])
-        if yticks2.get('style','linear') == 'log':
-            ax2.set_yscale('log')
-    ax2.patch.set_visible(False)
-    lines1, labels1 = ax1.get_legend_handles_labels()
-    lines2, labels2 = ax2.get_legend_handles_labels()
-    ax1.legend(lines1 + lines2, labels1 + labels2, fontsize=9, loc='best')
-    plt.gca().xaxis.set_major_formatter(FormatStrFormatter(xticks['round']))
-    if 'round' in yticks1:
-        ax1.yaxis.set_major_formatter(FormatStrFormatter(yticks1['round']))
-    if 'round' in yticks2:
-        ax2.yaxis.set_major_formatter(FormatStrFormatter(yticks2['round']))
-    plt.title(title, fontsize=9, fontweight="bold")
-    plt.tight_layout()
-    plt.show()
+def read_data(input_file):
+    try:
+        with open(input_file, 'r') as file:
+            lines = file.readlines()
+    except FileNotFoundError:
+        print(f"Error: File {input_file} not found")
+        return
+    except Exception as e:
+        print(f"Error reading file: {e}")
+        return
+
+    # Extract array names (5th line)
+    array_names = lines[4].strip().split()
+
+    # Extract data (starting from 7th line)
+    data = []
+    for line in lines[6:]:
+        if line.strip():
+            # Check for duplicate column headers
+            if any(name in line for name in array_names):
+                continue
+            data.append(list(map(float, line.strip().split())))
+
+    # Convert to NumPy array
+    data_array = np.array(data)
+
+    # Create dictionary mapping array names to columns
+    arrays = {name: data_array[:, i] for i, name in enumerate(array_names)}
+
+    # # Time filtering
+    # mask = time > 0
+
+    return arrays
+
+def overshoot(signal):
+    steady_state_value = signal[-1]
+    peak_value = np.max(signal)
+    overshoot_value = (peak_value - steady_state_value) / steady_state_value
+    return overshoot_value
+
+def settling_time(time, signal, threshold=0.005):
+    steady_state_value = signal[-1]
+    upper_bound = steady_state_value * (1 + threshold)
+    lower_bound = steady_state_value * (1 - threshold)
+
+    for i in range(len(signal)-1, -1, -1):
+        if signal[i] > upper_bound or signal[i] < lower_bound:
+            return time[i+1] if i+1 < len(time) else time[-1]
+    return time[0]
+
+def undershoot(signal):
+    steady_state_value = signal[-1]
+    trough_value = np.min(signal)
+    undershoot_value = (steady_state_value - trough_value) / steady_state_value
+    return undershoot_value
+
+
+def main():
+    folder = '5_decrease'
+    powers = [40, 50, 60, 70, 80, 90, 100]
+    gains = (0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.25, 1.5, 1.75)
+    for power in powers:
+        for gain in gains:
+            input_file = os.path.join(folder, f'results_{power}_{gain}.plt')
+            arrays = read_data(input_file)
+            signal = arrays['GROUT(34)']
+            overshoot_value = overshoot(signal)
+            time = arrays['TIME']
+            settling_time_value = settling_time(time-1000, signal)
+            # print(f"Overshoot: {overshoot_value*100:.2f}%")
+            print(power,'    ', gain,'    ',f"{settling_time_value:.2f} seconds")
 
 
 if __name__ == "__main__":
-    data1 = [[1, 2, 3, 4, 5], [4, 5, 6, 7, 8]]
-    data2 = [[1, 2, 3, 4, 5], [6, 5, 4, 3, 2]]
-    data3 = [[1, 2, 3, 4, 5], [3, 4, 5, 6, 7]]
-    data4 = [[1, 2, 3, 4, 5], [2, 3, 4, 5, 6]]
-
-    # 单 y 轴
-    multiple_curves_plot(
-        title='Single Y-axis Example',
-        datas=[data1, data2],
-        # labels=['Data 1', 'Data 2'],
-        xticks={'min':0, 'max':6, 'interval':1, 'suffix':'', 'style':'linear', 'round':"%.2f"},
-        yticks={'min':2, 'max':9, 'interval':1, 'suffix':'', 'style':'linear', 'round':"%.2f"},
-        xlabel='X Label',
-        ylabel='Y Label'
-    )
-
-    # 双 y 轴
-    multiple_curves_plot_2y(
-        title='Dual Y-axis Example',
-        datas_y1=[data1, data2],
-        datas_y2=[data3, data4],
-        labels=['Left 1', 'Left 2', 'Right 1', 'Right 2'],
-        xticks={'min':0, 'max':6, 'interval':1, 'suffix':'', 'style':'linear', 'round':"%.2f"},
-        yticks1={'min':2, 'max':9, 'interval':1, 'suffix':'', 'style':'linear', 'round':"%.2f"},
-        yticks2={'min':2, 'max':9, 'interval':1, 'suffix':'', 'style':'linear', 'round':"%.2f"},
-        xlabel='X Label',
-        ylabel1='Left Y',
-        ylabel2='Right Y'
-    )
+    main()
